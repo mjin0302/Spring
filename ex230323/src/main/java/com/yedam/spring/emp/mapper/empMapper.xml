@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.yedam.spring.emp.mapper.EmpMapper">
+
+	<!-- id는 해당 인터페이스의(com.yedam.spring.emp.mapper.EmpMapper) 메소드 이름을 끌고 들어옴 -->
+	<!-- select에선 resultType이 필수 조건임 -->
+	<!-- 원래는 풀네임을 써야했었음 하지만 typeAlias를 만들어 놔서 resultType에는 EmpVO가 와도됨 -->
+	<!-- 보통 SELECT절에 *을 사용하지 않음, 그리고 ORDER BY를 넣어주면 좋음 -->
+	<!-- 약어 사용시 한글자만 사용하면 안됨 ex)cId -> setCId() : cid  꼭 두글자 이상 단어들로 구성을 해야함 -->
+	
+	<!--  #{ } : PreparedStatement , 0 => 0, Kang => 'Kang'  타입에 따라 변경해줌
+		  ${ } : 따로 처리를 해주지 않고 그대로 보내버림 , 0 => 0 , Kang => Kang, 테이블이나 컬럼명 그대로 전달하는경우-->
+	
+	<!-- 전체 조회 -->
+	<select id="selectEmpAllList" resultType="EmpVO">
+		SELECT employee_id, first_name, last_name, email, phone_number, hire_date, 
+			   job_id, salary, commission_pct, manager_id, department_id
+		FROM   employees
+		ORDER BY employee_id
+	</select>
+	
+	<!-- 단건조회 -->
+	<select id="selectEmpInfo" resultType="EmpVO">
+		SELECT employee_id, first_name, last_name, email, phone_number, hire_date, 
+			   job_id, salary, commission_pct, manager_id, department_id
+		FROM   employees
+		WHERE employee_id = #{employeeId}
+		ORDER BY employee_id
+	</select>
+	
+	<!--  insert는 parameterType이 필수임 -->
+	<!--  resultType은 무조건 정수로 나옴 => 우리가 임의로 줄수없음 -->
+	
+	<!-- insert와 update는 서브태그가 존재함 : selectKey -->
+	<!--  <selectKey></selectKey> 
+	1. insert나 update쿼리가 실행되기전 혹은 후에 연속적으로 실행하는 sql문을 뜻함
+	2. 주로 사용하는것은 pk를 부여할때 사용함
+	3. 시퀀스는 기본적으로 숫자밖에 안됨 (숫자만 지원함) , 모든 테이블의 id가 숫자로만 구성되어있다면
+	id가 어떤테이블의 id인지 확인하지 어려움 따라서 pk는 보통 문자+숫자 결합된 형태로 나타냄
+	=> 따라서 selectKey를 이용하여 처리함
+	4. inset할때 시퀀스를 기반으로 insert하게 되면 그 직후에 해당 insert된 id값을 알수없음
+	=> selectkey를 사용하면 id값을 알수있음
+	5.selectKey를 실행한 결과를 기반으로 insert가 되기 때문 => 그 결과는 vo에 담김 -->
+	
+	<!-- 등록 -->
+	<insert id="insertEmpInfo" parameterType="EmpVO">
+		<selectKey keyProperty="employeeId" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(employee_id),0) + 1
+			FROM employees
+		</selectKey>
+		INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary)
+			 VALUES (#{employeeId}, #{firstName}, #{lastName}, #{email}, sysdate, #{jobId}, #{salary})
+	</insert>
+	
+	
+	<!-- 수정 : 급여를 정해진 비율로 인상 -->
+	<!-- ★ 복수의 매개변수를 넘길때는 parameterType을 생략함 ★ -->
+	<!-- ★ 매개변수가 1개만 넘어올땐 이름이 상관없음 단, 두개가 넘어올땐 어떤걸 어디에쓸건지 이름이 필요함 ★-->
+	<!-- => ★ 이때 메소드쪽에서  @Param 어노테이션을 사용하여 이름 처리를 해줘야함 ★ -->
+	<update id="updateEmpSal" >
+		UPDATE employees
+		SET salary = salary * (1 + #{raise}/100)
+		WHERE employee_id = #{empId}
+	</update>
+	
+	<!--  수정 : 사원 정보 수정 -->
+	<!--  어떤 정보를 수정할진 모르겠는 경우 -->
+	<!--  1) 모든 항목에 업데이트 진행, 전제조건 : 모든항목에 정보가 존재해야함 -->
+	<!--  2) Mybatis -> Dynamic SQL사용 -->
+	<!--  test에서는 #을 쓰지 않음 -->
+	<!--  if문에는 자바식으로 쓰면 됨 -->
+	<!--  String 타입은 null, 숫자는 0 -->
+	<update id="updateEmpInfo" parameterType="EmpVO">
+		UPDATE employees
+		<set>
+			<if test="firstName != null and !firstName.equals('')">
+				first_Name = #{firstName},
+			</if>
+			<if test="email != null and !email.equals('')">
+				email = #{email},
+			</if>
+			<if test="salary > 0">
+				salary = #{salary},
+			</if>
+		</set>
+		WHERE employee_id = #{employeeId}
+	</update>
+	
+	<!-- 삭제 -->
+	<delete id="deleteEmpInfo" parameterType="int">
+		DELETE 
+		FROM employees
+		WHERE employee_id = #{employeeId}
+	</delete>
+	
+</mapper>
