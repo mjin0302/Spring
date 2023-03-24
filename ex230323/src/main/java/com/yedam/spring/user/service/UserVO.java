@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 
@@ -28,6 +29,8 @@ public class UserVO {
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date today;
 	
+	// 이미지 업로드
+	private MultipartFile pic;
 }
 
 

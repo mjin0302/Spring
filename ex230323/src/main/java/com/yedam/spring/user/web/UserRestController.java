@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +21,8 @@ import com.yedam.spring.user.service.UserVO;
 @CrossOrigin
 //데이터를 반환하는 컨트롤러
 //필드명이 중요함
-@RestController
+//@RestController => @Contoller + @ResponseBody => 해당 클래스 내의 모든 컨트롤러는 객체를 반환(데이터를 반환)
+@RestController 
 public class UserRestController {
 	// @RequestMapping의 value : 경로 , method : 통신방식 
 	// 이때 글자로 post라고 안쓰고 RequestMethod.POST라는 전역 번수를 씀
@@ -100,6 +102,11 @@ public class UserRestController {
 		return userVO;
 	}
 	
-	
+	@PostMapping("/upload")
+	public String uploadFile(UserVO userVO) {
+		System.out.println("name : " + userVO.getName());
+		System.out.println("file : " + userVO.getPic().getOriginalFilename());
+		return "업로드를 완료했습니다.";
+	}
 	
 }
