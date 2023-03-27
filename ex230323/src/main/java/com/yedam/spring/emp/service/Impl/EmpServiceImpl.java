@@ -17,59 +17,54 @@ public class EmpServiceImpl implements EmpService {
 
 	@Autowired
 	EmpMapper empMapper;
-	
-	// 목록조회
+
 	@Override
 	public List<EmpVO> getEmpAll() {
 		return empMapper.selectEmpAllList();
 	}
-	
-	// 단건조회
+
 	@Override
 	public EmpVO getEmp(EmpVO empVO) {
 		return empMapper.selectEmpInfo(empVO);
 	}
 
-	// 등록
 	@Override
 	public int insertEmp(EmpVO empVO) {
 		int result = empMapper.insertEmpInfo(empVO);
-		
-		if(result == 1) {
+
+		if (result == 1) {
 			return empVO.getEmployeeId();
-		}else {
+		} else {
 			return -1;
 		}
 	}
-	
-	// 급여 수정
+
 	@Override
 	public String updateEmpSal(int empId, int raise) {
 		String message = null;
-		
+
 		int result = empMapper.updateEmpSal(empId, raise);
-		if(result == 1) {
+		if (result == 1) {
 			message = "정상적으로 급여를 갱신하였습니다.";
-		}else {
+		} else {
 			message = "작업이 실패했습니다. 사원번호를 확인해주세요.";
 		}
 		return message;
 	}
-	
-	// 회원정보 수정
+
 	@Override
-	public Map<String,String> updateEmp(EmpVO empVO) {
-		Map<String,String> map = new HashMap<>();
-		
+	public Map<String, String> updateEmp(EmpVO empVO) {
+		Map<String, String> map = new HashMap<>();
+
 		map.put("사원번호", String.valueOf(empVO.getEmployeeId()));
-		
+
 		int result = empMapper.updateEmpInfo(empVO);
-		
-		if(result == 1) {
+
+		if (result == 1) {
 			map.put("결과", "Success");
-		}else {
+		} else {
 			map.put("결과", "Fail");
-		}		
+		}
 		return map;
 	}
 
@@ -77,16 +72,16 @@ public class EmpServiceImpl implements EmpService {
 	@Override
 	public Map<String, String> deleteEmp(int empId) {
 		Map<String, String> map = new HashMap<>();
-		
+
 		map.put("사원번호", String.valueOf(empId));
-		
+
 		int result = empMapper.deleteEmpInfo(empId);
-		
-		if(result == 1) {
+
+		if (result == 1) {
 			map.put("결과", "Success");
-		}else {
+		} else {
 			map.put("결과", "Fail");
-		}		
+		}
 		return map;
 	}
 
