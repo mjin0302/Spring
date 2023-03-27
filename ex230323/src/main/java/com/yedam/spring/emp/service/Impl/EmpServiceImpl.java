@@ -18,16 +18,19 @@ public class EmpServiceImpl implements EmpService {
 	@Autowired
 	EmpMapper empMapper;
 	
+	// 목록조회
 	@Override
 	public List<EmpVO> getEmpAll() {
 		return empMapper.selectEmpAllList();
 	}
-
+	
+	// 단건조회
 	@Override
 	public EmpVO getEmp(EmpVO empVO) {
 		return empMapper.selectEmpInfo(empVO);
 	}
 
+	// 등록
 	@Override
 	public int insertEmp(EmpVO empVO) {
 		int result = empMapper.insertEmpInfo(empVO);
@@ -38,7 +41,8 @@ public class EmpServiceImpl implements EmpService {
 			return -1;
 		}
 	}
-
+	
+	// 급여 수정
 	@Override
 	public String updateEmpSal(int empId, int raise) {
 		String message = null;
@@ -51,7 +55,8 @@ public class EmpServiceImpl implements EmpService {
 		}
 		return message;
 	}
-
+	
+	// 회원정보 수정
 	@Override
 	public Map<String,String> updateEmp(EmpVO empVO) {
 		Map<String,String> map = new HashMap<>();
@@ -68,9 +73,10 @@ public class EmpServiceImpl implements EmpService {
 		return map;
 	}
 
+	// 삭제
 	@Override
 	public Map<String, String> deleteEmp(int empId) {
-		Map<String,String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		
 		map.put("사원번호", String.valueOf(empId));
 		

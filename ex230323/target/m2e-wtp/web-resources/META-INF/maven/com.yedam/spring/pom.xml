@@ -135,6 +135,7 @@
 		</dependency>
 		
 		<!-- jackson - 직렬화 작업 : 객체를 텍스트로 변환 -->
+		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -182,6 +183,23 @@
 		  <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
 		  <version>1.16</version>
 		</dependency>
+		
+		<!-- tiles관련 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.tiles/tiles-core -->
+		<dependency>
+		    <groupId>org.apache.tiles</groupId>
+		    <artifactId>tiles-core</artifactId>
+		    <version>3.0.8</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.tiles/tiles-extras -->
+		<dependency>
+		    <groupId>org.apache.tiles</groupId>
+		    <artifactId>tiles-extras</artifactId>
+		    <version>3.0.8</version>
+		</dependency>
+		
+		
 	</dependencies>
     <build>
         <plugins>

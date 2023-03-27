@@ -11,7 +11,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 </head>
 <body>
-    <form action="empUpdate" method="POST" onsubmit="return false">
+    <!-- return false 이벤트 전파를 막음 -->
+    <form onsubmit="return false">
         <div>
             <label>id : <input type="text" name="employeeId" value="${ empInfo.employeeId }" readonly></label>
         </div>
@@ -50,22 +51,46 @@
     </form>
 
     <script>
-        fetch('', {
-            method : 'POST',
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body : convertData();
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(reject => console.log(reject))
-
-        function convertData() {
-            let selectForm = document.querySelector('form');
-
-            let formatDate = new FormData(selectForm);
+        function updateEmpInfo() {
+            fetch('empUpdate', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8"
+                },
+                body: JSON.stringify(serializeObjct())
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data != null && data['결과'] == 'Success') {
+                    alert('사원번호 : ' + data['사원번호']  + '의 정보가 수정되었습니다.');
+                } else {
+                    alert('해당 사원의 정보가 정상적으로 수정되지 않았습니다.');
+                }
+            })
+            .catch(reject => console.log(reject))
         }
+
+        function serializeObjct() {
+            let formData = $('form').serializeArray();
+            //[{ name : '', value : ''}, {name : '', value : ''}, ...]
+
+            let objectData = {}
+            formData.forEach(function(obj, idx) {
+                // 배열안에 있는 값을 순차적으로 키, 밸류 형태로 만듦
+                objectData[obj.name] = obj.value
+            });
+
+            return objectData;
+        }
+
+        document.querySelector('button[type="submit"]').addEventListener('click', updateEmpInfo);
+
+        // function convertData() {
+        //     let selectForm = document.querySelector('form');
+
+        //     let formatDate = new FormData(selectForm);
+        // }
+        
     </script>
 </body>
 </html>
