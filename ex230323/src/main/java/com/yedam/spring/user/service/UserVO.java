@@ -30,7 +30,8 @@ public class UserVO {
 	private Date today;
 	
 	// 이미지 업로드
-	private MultipartFile pic;
+	// 여러건을 처리할꺼라서 배열임
+	private MultipartFile[] pic;
 }
 
 
