@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.yedam.java.book.mapper.BookMapper">
+  	
+  	<select id="selectBookList" resultType="BookVO">
+		SELECT book_no, book_name, book_coverimg, book_date, book_price, book_publisher, book_info
+  		  FROM book_tbl_06
+         ORDER BY book_no
+	</select>
+  	
+  	<select id="getBookNo" resultType="BookVO">
+		<!-- 최초 등록할땐 max값이 null값이라서 null에 대해서 처리 해주는 nvl을 항상 같이 사용해줘야함 -->
+		<!-- 독립되어서 처리할게 많다면 새로운 VO에 생성 -->
+		<!-- 기존의 VO로 대체가 가능하다면 별칭을 붙여서 저장 -->
+		<!-- 별칭이 없다면 BoardVO의 어디에 값을 넣을지 모르기 때문에 별칭은 꼭 존재해야함 -->
+		SELECT NVL(MAX(book_No), 0) + 1 as book_no
+		  FROM book_tbl_06
+	</select>
+  	
+  	<insert id="insertBook" parameterType="BookVO">
+		INSERT INTO book_tbl_06 (book_no, book_name, book_coverimg, book_date, book_price, book_publisher, book_info) 
+                 		 VALUES (#{bookNo}, #{bookName}, #{bookCoverimg}, #{bookDate}, #{bookPrice}, #{bookPublisher}, #{bookInfo})
+	
+	</insert>
+  
+  	<select id="selectBookInfo" resultType="BookVO">
+  		SELECT b.book_no, b.book_name, SUM(r.rent_price) as totalPrice, COUNT(r.book_no) as bookCount
+		  FROM book_tbl_06 b JOIN rent_tbl_06 r 
+		                       ON b.book_no = r.book_no
+		 GROUP BY b.book_no, b.book_name
+		 ORDER BY 1
+  	</select>
+  
+  </mapper>

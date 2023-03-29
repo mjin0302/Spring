@@ -14,6 +14,7 @@
 		<security:intercept-url pattern="/admin/**" access="hasAuthority('ROLE_ADMIN')"/>
 		<!-- 체크가 유알엘이 순차적으로 들어기 때문에 아스타가 밑에 있어야 함(개중요함) -->
 		<!-- 권한과 상관없이 인증을 한 어드민, 유저 모드 접근가능 -->
+		<!-- 루트밑에 있는 모든 페이지들에 인증한 대상만 허용? -->
 		<security:intercept-url pattern="/**" access="isAuthenticated()"/>
 		
 		<!-- 인증과 관련된 정보들 -->
@@ -25,13 +26,22 @@
 		<security:csrf disabled="true"/>
 	</security:http>
 	
+	
 	<security:authentication-manager>
-		<security:authentication-provider>
-			<security:user-service>
-				<security:user name="user" password="1234" authorities="ROLE_USER"/>
-				<security:user name="admin" password="1234" authorities="ROLE_ADMIN"/>
-			</security:user-service>
-		</security:authentication-provider>
-	</security:authentication-manager>
-
+	    <security:authentication-provider> <!-- 실질적으로 인증 체크하는 그걸 대상으로? 애 등록되어있는지 체크하는 애 -->
+	    	<!-- 하나의 클래스로 만들어서 세션에 저장하는애 -->
+	    	<security:jdbc-user-service data-source-ref="dataSource" 
+	          users-by-username-query
+	            ="select LOGIN_ID, PASSWORD, 1
+	              from T_USER
+	              where LOGIN_ID = ?"
+	          authorities-by-username-query
+	            ="select LOGIN_ID, ROLE_NAME
+	              from T_ROLE
+	                inner join T_USER_ROLE on T_ROLE.ID = T_USER_ROLE.ROLE_ID
+	                inner join T_USER on T_USER_ROLE.USER_ID = T_USER.ID
+	              where LOGIN_ID = ?" />
+	        <security:password-encoder hash="bcrypt"/> <!-- bcrypt : 복호화 작업을함 -->
+	    </security:authentication-provider>
+    </security:authentication-manager>
 </beans>
